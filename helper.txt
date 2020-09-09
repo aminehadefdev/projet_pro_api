@@ -1,0 +1,14 @@
+initialisation sequelize = npx sequelize init
+
+
+cree un model = npx sequelize-cli model:generate --name User --attributes firstName:string,
+executer une migartion = npx sequelize-cli db:migrate
+
+cree un seed (data fake) = npx sequelize-cli seed:generate --name demo-user
+
+
+annuler une migartion = npx sequelize-cli db:migrate:undo
+
+
+cree un seeder = npx sequelize-cli seed:generate --name cities
+miggration du seeder = npx sequelize-cli db:seed:all
