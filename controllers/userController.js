@@ -52,8 +52,8 @@ class User extends helpers{
             status: null,
             user: {
                 role: null,
-                firstName: null,
-                lastName: null,
+                firstname: null,
+                lastname: null,
                 email: null
             },
             token: null
@@ -65,14 +65,14 @@ class User extends helpers{
             }
         })
         if (user != false) {
-            console.log(await bcrypt.compare(password, user.password))
+            console.log(user)
             if (await bcrypt.compare(password, user.password)) {
-                responseController.massageSucces = "vous etre co"
+                responseController.success = "vous etre co"
                 responseController.token = JWT.generateTokenForUser(user)
                 responseController.user.id = user.id
                 responseController.user.role = user.role
-                responseController.user.firstName = user.firstName
-                responseController.user.lastName = user.lastName
+                responseController.user.firstname = user.firstname
+                responseController.user.lastname = user.lastname
                 responseController.user.email = user.email
             }else {
                 responseController.status = 400
