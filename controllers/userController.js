@@ -58,26 +58,38 @@ class User extends helpers{
             },
             token: null
         }
-        var { email, password } = data
-        var user = await userModel.findOne({
-            where: {
-                email: email
+        if(data.password && data.email){
+            if(REGEX_EMAIL.test(data.email) && REGEX_PASSWORD.test(data.password)){
+                var { email, password } = data
+                var user = await userModel.findOne({
+                    where: {
+                        email: email
+                    }
+                })
+                if (user != null) {
+                    if (await bcrypt.compare(password, user.password)) {
+                        responseController.success = "vous etre co"
+                        responseController.token = JWT.generateTokenForUser(user)
+                        responseController.user.id = user.id
+                        responseController.user.role = user.role
+                        responseController.user.firstname = user.firstname
+                        responseController.user.lastname = user.lastname
+                        responseController.user.email = user.email
+                    }else {
+                        responseController.status = 400
+                        responseController.errors.push("Informations incorectes")
+                    }
+                }else{
+                    responseController.status = 400
+                    responseController.errors.push("email non enregistrer!")
+                }
+            }else{
+                this.checkIfDataIsValide(REGEX_EMAIL, data.email, responseController, "le champ email doit etre valide exemple: toto@gmail.com!")
+                this.checkIfDataIsValide(REGEX_PASSWORD, data.password, responseController, "le champ password doit contenire au minimum 8 caractaires dont au mois une majuscule une miniscule et un caractaiter special!")
             }
-        })
-        if (user != false) {
-            console.log(user)
-            if (await bcrypt.compare(password, user.password)) {
-                responseController.success = "vous etre co"
-                responseController.token = JWT.generateTokenForUser(user)
-                responseController.user.id = user.id
-                responseController.user.role = user.role
-                responseController.user.firstname = user.firstname
-                responseController.user.lastname = user.lastname
-                responseController.user.email = user.email
-            }else {
-                responseController.status = 400
-                responseController.errors.push("Informations incorectes")
-            }
+        }else{
+            this.checkIfDataIsNotEmpty(data.email, responseController, "le champ email est obligatoir!")
+            this.checkIfDataIsNotEmpty(data.password, responseController, "le champ password est obligatoir!")
         }
         return responseController
     }    
