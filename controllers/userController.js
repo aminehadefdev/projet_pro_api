@@ -1,6 +1,8 @@
 
 const helpers = require('../services/helpers')
 const userModel = require('../models').user
+const bcrypt = require('bcryptjs')
+const JWT = require('../services/JWT')
 
 const REGEX_EMAIL = /(?:[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*|"(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21\x23-\x5b\x5d-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])*")@(?:(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?|\[(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?|[a-z0-9-]*[a-z0-9]:(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21-\x5a\x53-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])+)\])/;
 const REGEX_NAME = /^([a-zA-Z]+)$/;
@@ -15,11 +17,11 @@ class User extends helpers{
             status: null
         }
         if(data.firstname && data.lastname && data.email && data.password && data.description && data.role){
-            if(REGEX_NAME.test(data.firstname) && REGEX_NAME.test(data.lastname), REGEX_EMAIL.test(data.email) && REGEX_PASSWORD.test(data.password)){
-                console.log("!!!!!!!!!!!!!!!!!!!!!!!!!")
+            if(REGEX_NAME.test(data.firstname) && REGEX_NAME.test(data.lastname) && REGEX_EMAIL.test(data.email) && REGEX_PASSWORD.test(data.password)){
                 let userExist = await userModel.findOne({ where: { email: data.email } });
                 if(!userExist){
-                    //await userModel.create(data)
+                    data.password = await bcrypt.hash(data.password, 10)
+                    await userModel.create(data)
                     responseController.success = "enregistrement reussi :)"
                     responseController.status = 201
                 }else{
@@ -43,5 +45,41 @@ class User extends helpers{
         }
         return responseController
     }
+    static async login(data) {
+        var responseController = {
+            success: "",
+            errors: [],
+            status: null,
+            user: {
+                role: null,
+                firstName: null,
+                lastName: null,
+                email: null
+            },
+            token: null
+        }
+        var { email, password } = data
+        var user = await userModel.findOne({
+            where: {
+                email: email
+            }
+        })
+        if (user != false) {
+            console.log(await bcrypt.compare(password, user.password))
+            if (await bcrypt.compare(password, user.password)) {
+                responseController.massageSucces = "vous etre co"
+                responseController.token = JWT.generateTokenForUser(user)
+                responseController.user.id = user.id
+                responseController.user.role = user.role
+                responseController.user.firstName = user.firstName
+                responseController.user.lastName = user.lastName
+                responseController.user.email = user.email
+            }else {
+                responseController.status = 400
+                responseController.errors.push("Informations incorectes")
+            }
+        }
+        return responseController
+    }    
 }
 module.exports = User
