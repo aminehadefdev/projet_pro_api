@@ -12,3 +12,5 @@ annuler une migartion = npx sequelize-cli db:migrate:undo
 
 cree un seeder = npx sequelize-cli seed:generate --name cities
 miggration du seeder = npx sequelize-cli db:seed:all
+
+
