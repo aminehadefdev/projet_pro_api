@@ -68,14 +68,23 @@ class User extends helpers{
                 })
                 if (user != null) {
                     if (await bcrypt.compare(password, user.password)){
-                        responseController.status = 201
-                        responseController.success = "vous etre co"
-                        responseController.token = JWT.generateTokenForUser(user)
-                        responseController.user.id = user.id
-                        responseController.user.role = user.role
-                        responseController.user.firstname = user.firstname
-                        responseController.user.lastname = user.lastname
-                        responseController.user.email = user.email
+                        if(user.isAccepted == 1){
+                            responseController.status = 201
+                            responseController.success = "vous etre co"
+                            responseController.token = JWT.generateTokenForUser(user)
+                            responseController.user.id = user.id
+                            responseController.user.role = user.role
+                            responseController.user.firstname = user.firstname
+                            responseController.user.lastname = user.lastname
+                            responseController.user.email = user.email
+                        }else if(user.isAccepted == 2){
+                            responseController.status = 401
+                            responseController.errors.push("vous avez etait refuser!")
+                        }
+                        else if(user.isAccepted == 0){
+                            responseController.status = 401
+                            responseController.errors.push("votre dossier est en cour de traitement!")
+                        }
                     }else {
                         responseController.status = 400
                         responseController.errors.push("Informations incorectes")
