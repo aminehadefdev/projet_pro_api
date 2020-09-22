@@ -14,7 +14,7 @@ module.exports = (app)=>{
     })
     app.post("/admin/video/add", JWT.AdminIsAutorisedLevelOne ,async (req, res)=>{
         var response = await videoContoller.register(req)
-        res.json(response)
+        res.status(response.status).json(response)
     })
     app.post("/admin/RGPD-CGU", JWT.AdminIsAutorisedLevelThree, (req, res)=>{
         res.json({test: "ok"})

@@ -4,7 +4,8 @@ const userModel = require('../models').user
 
 module.exports = {
   up: async (queryInterface, Sequelize) => {
-    for (let i = 0; i < 30; i++) {
+    for (let i = 0; i < 200; i++) {
+      faker.locale = "fr"
       await userModel.create({
         firstname: faker.name.firstName(),
         lastname: faker.name.lastName(),
@@ -13,8 +14,11 @@ module.exports = {
         description: faker.lorem.text(50),
         role: faker.random.number({
           "min": 1,
-          "max": 3
-        })
+          "max": 2
+        }),
+        isAccepted: 1,
+        idAdmin: 1,
+        job: faker.name.jobTitle().substring(4)
       })
     }
   },

@@ -22,7 +22,7 @@ class User extends helpers{
                 if(!userExist){
                     data.password = await bcrypt.hash(data.password, 10)
                     data.isAccepted = 0
-                    await userModel.create(data)
+                    //await userModel.create(data)
                     responseController.success = "enregistrement reussi :)"
                     responseController.status = 201
                 }else{
@@ -102,6 +102,45 @@ class User extends helpers{
             this.checkIfDataIsNotEmpty(data.password, responseController, "le champ password est obligatoir!")
         }
         return responseController
-    }    
+    }
+    static async search(data){
+        var responseController = {
+            success: null,
+            errors: [],
+            status: 201,
+            data: null,
+        }
+        var {job} = data.query
+        if(job){
+            responseController.data = await userModel.findAll({
+                where: {
+                    job: job,
+                    role: 1
+                },
+                attributes: [
+                    "id",
+                    "firstname",
+                    "lastname",
+                    "description",
+                    "job"
+                ]
+            })
+        }
+        return responseController
+    }
+    static async getMentor(data){
+        var responseController = {
+            success: null,
+            errors: [],
+            status: 201,
+            data: null,
+        }
+        
+        if(data.body.id){
+            
+        }
+
+        return responseController
+    }
 }
 module.exports = User

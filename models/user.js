@@ -22,6 +22,7 @@ module.exports = (sequelize, DataTypes) => {
     role: DataTypes.INTEGER,
     isAccepted: DataTypes.INTEGER,
     idAdmin: DataTypes.INTEGER,
+    job: DataTypes.STRING,
 
   }, {
     sequelize,

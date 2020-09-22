@@ -32,6 +32,9 @@ module.exports = {
       idAdmin: {
         type: Sequelize.INTEGER
       },
+      job: {
+        type: Sequelize.STRING
+      },
       createdAt: {
         allowNull: false,
         type: Sequelize.DATE
