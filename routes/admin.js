@@ -1,6 +1,8 @@
 const adminController = require('../controllers/adminController')
 const videoContoller = require('../controllers/videoController')
 const avantageController = require('../controllers/avantageController')
+const regleController = require('../controllers/regleController')
+
 const JWT = require('../services/JWT')
 
 module.exports = (app)=>{
@@ -17,8 +19,9 @@ module.exports = (app)=>{
         var response = await videoContoller.register(req)
         res.status(response.status).json(response)
     })
-    app.post("/admin/RGPD-CGU", JWT.AdminIsAutorisedLevelThree, (req, res)=>{
-        res.json({test: "ok"})
+    app.post("/admin/regle/add", JWT.AdminIsAutorisedLevelThree, async (req, res)=>{
+        var response = await regleController.register(req)
+        res.status(response.status).json(response)
     })
     app.post("/admin/accept/user", JWT.AdminIsAutorisedLevelTwo, async (req, res)=>{
         var response = await adminController.acceptUser(req)
