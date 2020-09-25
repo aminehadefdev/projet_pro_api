@@ -24,6 +24,12 @@ class serviceJWT {
   }
 
     static UserIsAutorised(req, res, next) {
+      if(req.body.token == null || req.body.token == undefined){
+        return res.json({
+          success: false,
+          message: 'Token is not difined'
+        });
+      }
         var token = req.body.token
         if (token.startsWith('Bearer ')) {
             token = token.slice(7, token.length);

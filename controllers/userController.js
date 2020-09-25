@@ -1,6 +1,7 @@
 
 const helpers = require('../services/helpers')
 const userModel = require('../models').user
+const requestMentoringModel = require('../models').requestMentoring
 const bcrypt = require('bcryptjs')
 const JWT = require('../services/JWT')
 
@@ -22,7 +23,7 @@ class User extends helpers{
                 if(!userExist){
                     data.password = await bcrypt.hash(data.password, 10)
                     data.isAccepted = 0
-                    //await userModel.create(data)
+                    await userModel.create(data)
                     responseController.success = "enregistrement reussi :)"
                     responseController.status = 201
                 }else{
@@ -132,15 +133,83 @@ class User extends helpers{
         var responseController = {
             success: null,
             errors: [],
-            status: 201,
+            status: null,
             data: null,
         }
         
         if(data.body.id){
-            
+            responseController.data = await userModel.findOne({
+                where: {
+                    id: data.body.id
+                },
+                attributes: [
+                    "id",
+                    "firstname",
+                    "lastname",
+                    "description",
+                    "job"
+                ]
+            })
+            if(responseController.data){
+                responseController.status = 201
+                responseController.success = "utilisateur trouver!"
+            }else{
+                responseController.status = 403
+                responseController.success = "utilisateur introuver!"
+            }
+        }else{
+            responseController.status = 403
+            responseController.success = "id incorect"
         }
 
         return responseController
+    }
+    static async getMentors(data){
+        var responseController = {
+            success: null,
+            errors: [],
+            status: 201,
+            data: null,
+        }
+
+        responseController.data = await requestMentoringModel.findAll({
+            where:{idMentorer: data.decoded.id},
+            include: [{model: userModel, attributes: ["id", "firstname", "lastname", "description", "role", "isAccepted"]}]
+        })
+
+        return responseController
+    }
+    static async requisteMentoring(data){
+        var responseController = {
+            success: null,
+            errors: [],
+            status: null,
+        }
+        if(data.body.idMentor){
+            data.body.idMentorer = parseInt(data.decoded.id)
+            data.body.idMentor = parseInt(data.body.idMentor)
+            data.body.isAccepted = 0
+            var requestMentoringExist = await requestMentoringModel.findOne({
+                where:{
+                    idMentor: data.body.idMentor,
+                    idMentorer: data.body.idMentorer
+                }
+            })
+            if(requestMentoringExist == null){
+                await requestMentoringModel.create(data.body)
+                responseController.status = 201
+                responseController.success = "demande de mentoring bien envoyer!"
+            }else{
+                responseController.status = 403
+                responseController.errors.push('vous avez deja une demande de mentoring!')
+            }
+        }else{
+            responseController.status = 403
+            responseController.errors.push('id mentore non resegnier!')
+        }
+
+        return responseController
+        
     }
 }
 module.exports = User
