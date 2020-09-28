@@ -10,7 +10,6 @@ module.exports = (app)=>{
         var response = await adminController.register(req.body)
         res.status(response.status).json(response)
     })
-
     app.post("/admin/login", async (req, res)=>{
         var response = await adminController.login(req.body)
         res.status(response.status).json(response)

@@ -20,5 +20,29 @@ class regle extends helpers{
 
         return responseController
     }
+    static async update(data){
+        var responseController = {
+            success: "",
+            errors: [],
+            status: null
+        }
+        if(data.body.id){
+            var regleExiste = await regleModel.findOne({where: {id: data.body.id}})
+            if(regleExiste != null){
+                var body = data.body
+                await regleModel.update({body}, {where: data.body.id})
+                responseController.success = "regle bine mis a joure!"
+                responseController.status = 201
+            }else{
+                responseController.errors.push("aucun id!")
+                responseController.status = 403
+            }
+
+        }else{
+            responseController.errors.push("aucun id!")
+            responseController.status = 403
+        }
+        return responseController
+    }
 }
 module.exports = regle
