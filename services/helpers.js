@@ -5,6 +5,9 @@ class helpers{
             if(obj.status != 401){
                 obj.status = 401
             }
+            if(obj.success != false){
+                obj.success = false
+            }
         }
     }
     static checkIfDataIsValide(regex, data, obj, messageError){
@@ -12,6 +15,9 @@ class helpers{
             obj.errors.push(messageError)
             if (obj.status != 401) {
                 obj.status = 401
+            }
+            if(obj.success != false){
+                obj.success = false
             }
         }
     }

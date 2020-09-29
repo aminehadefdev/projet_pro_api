@@ -4,6 +4,7 @@ const userModel = require('../models').user
 const requestMentoringModel = require('../models').requestMentoring
 const bcrypt = require('bcryptjs')
 const serviceJWT_user = require('../services/JWT_user')
+const { reporters } = require('mocha')
 
 const REGEX_EMAIL = /(?:[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*|"(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21\x23-\x5b\x5d-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])*")@(?:(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?|\[(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?|[a-z0-9-]*[a-z0-9]:(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21-\x5a\x53-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])+)\])/;
 const REGEX_NAME = /^([a-zA-Z]+)$/;
@@ -13,7 +14,8 @@ const REGEX_PASSWORD = /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#\$%\^&\*])(?=
 class User extends helpers{
     static async register(data){
         var responseController = {
-            success: "",
+            success: null,
+            successMessage: null,
             errors: [],
             status: null
         }
@@ -24,7 +26,8 @@ class User extends helpers{
                     data.password = await bcrypt.hash(data.password, 10)
                     data.isAccepted = 0
                     await userModel.create(data)
-                    responseController.success = "enregistrement reussi :)"
+                    responseController.successMessage = "enregistrement reussi :)"
+                    responseController.success = true
                     responseController.status = 201
                 }else{
                     responseController.errors.push("email deja enregistrer!")
@@ -48,7 +51,8 @@ class User extends helpers{
     }
     static async login(data) {
         var responseController = {
-            success: "",
+            success: null,
+            successMessage: null,
             errors: [],
             status: null,
             user: {
@@ -71,7 +75,8 @@ class User extends helpers{
                     if (await bcrypt.compare(password, user.password)){
                         if(user.isAccepted == 1){
                             responseController.status = 201
-                            responseController.success = "vous etre co"
+                            responseController.successMessage = "vous etre co"
+                            responseController.success = true
                             responseController.token = serviceJWT_user.generateTokenForUser(user)
                             responseController.user.id = user.id
                             responseController.user.role = user.role
@@ -81,18 +86,22 @@ class User extends helpers{
                         }else if(user.isAccepted == 2){
                             responseController.status = 401
                             responseController.errors.push("vous avez etait refuser!")
+                            responseController.success = false
                         }
                         else if(user.isAccepted == 0){
                             responseController.status = 401
                             responseController.errors.push("votre dossier est en cour de traitement!")
+                            responseController.success = false
                         }
                     }else {
-                        responseController.status = 400
+                        responseController.status = 401
                         responseController.errors.push("Informations incorectes")
+                        responseController.success = false
                     }
                 }else{
-                    responseController.status = 400
+                    responseController.status = 401
                     responseController.errors.push("email non enregistrer!")
+                    responseController.success = false
                 }
             }else{
                 this.checkIfDataIsValide(REGEX_EMAIL, data.email, responseController, "le champ email doit etre valide exemple: toto@gmail.com!")
@@ -210,6 +219,32 @@ class User extends helpers{
 
         return responseController
         
+    }
+    static async crud(data){
+        var responseController = {
+            success: "",
+            errors: [],
+            status: 201
+        }
+        var user = {}
+        if(data.body.firstname)user.firstname = data.body.firstname
+        if(data.body.lastname)user.lastname = data.body.lastname
+        if(data.body.email)user.email = data.body.email
+        if(data.body.description)user.description = data.body.description
+        if(data.body.job)user.job = data.body.job
+
+        var up =  await userModel.update(user, {
+            where: {id: data.decoded.id}
+        })
+
+        if(up[0] == 1){
+            responseController.status = 201
+            responseController.success = "modification bien enregistrer!"
+        }else if(up[0] == 0){
+            responseController.errors.push("modification impossible!")
+            responseController.status = 403
+        }    
+        return responseController
     }
 }
 module.exports = User
