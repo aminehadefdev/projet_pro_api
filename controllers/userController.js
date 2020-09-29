@@ -3,7 +3,7 @@ const helpers = require('../services/helpers')
 const userModel = require('../models').user
 const requestMentoringModel = require('../models').requestMentoring
 const bcrypt = require('bcryptjs')
-const JWT = require('../services/JWT')
+const serviceJWT_user = require('../services/JWT_user')
 
 const REGEX_EMAIL = /(?:[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*|"(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21\x23-\x5b\x5d-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])*")@(?:(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?|\[(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?|[a-z0-9-]*[a-z0-9]:(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21-\x5a\x53-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])+)\])/;
 const REGEX_NAME = /^([a-zA-Z]+)$/;
@@ -32,17 +32,17 @@ class User extends helpers{
                 }
             }else{
                 this.checkIfDataIsValide(REGEX_EMAIL, data.email, responseController, "le champ email doit etre valide exemple: toto@gmail.com!")
-                this.checkIfDataIsValide(REGEX_NAME, data.firstname, responseController, "le firstname doit contenire que des lettre!")
-                this.checkIfDataIsValide(REGEX_NAME, data.lastname, responseController, "le lastname doit contenire que des lettre!")
-                this.checkIfDataIsValide(REGEX_PASSWORD, data.password, responseController, "le champ password doit contenire au minimum 8 caractaires dont au mois une majuscule une miniscule et un caractaiter special!")
+                this.checkIfDataIsValide(REGEX_NAME, data.firstname, responseController, "le firstname doit contenir que des lettre!")
+                this.checkIfDataIsValide(REGEX_NAME, data.lastname, responseController, "le lastname doit contenir que des lettre!")
+                this.checkIfDataIsValide(REGEX_PASSWORD, data.password, responseController, "le champ password doit contenir au minimum 8 caracteres dont au moins une majuscule une minuscule et un caracter special!")
             }
         }else{
-            this.checkIfDataIsNotEmpty(data.firstname, responseController, "le champ firstname est obligatoir!")
-            this.checkIfDataIsNotEmpty(data.lastname, responseController, "le champ lastname est obligatoir!")
-            this.checkIfDataIsNotEmpty(data.email, responseController, "le champ email est obligatoir!")
-            this.checkIfDataIsNotEmpty(data.password, responseController, "le champ password est obligatoir!")
-            this.checkIfDataIsNotEmpty(data.description, responseController, "le champ description est obligatoir!")
-            this.checkIfDataIsNotEmpty(data.role, responseController, "le champ role est obligatoir!")
+            this.checkIfDataIsNotEmpty(data.firstname, responseController, "le champ firstname est obligatoire!")
+            this.checkIfDataIsNotEmpty(data.lastname, responseController, "le champ lastname est obligatoire!")
+            this.checkIfDataIsNotEmpty(data.email, responseController, "le champ email est obligatoire!")
+            this.checkIfDataIsNotEmpty(data.password, responseController, "le champ password est obligatoire!")
+            this.checkIfDataIsNotEmpty(data.description, responseController, "le champ description est obligatoire!")
+            this.checkIfDataIsNotEmpty(data.role, responseController, "le champ role est obligatoire!")
         }
         return responseController
     }
@@ -72,7 +72,7 @@ class User extends helpers{
                         if(user.isAccepted == 1){
                             responseController.status = 201
                             responseController.success = "vous etre co"
-                            responseController.token = JWT.generateTokenForUser(user)
+                            responseController.token = serviceJWT_user.generateTokenForUser(user)
                             responseController.user.id = user.id
                             responseController.user.role = user.role
                             responseController.user.firstname = user.firstname

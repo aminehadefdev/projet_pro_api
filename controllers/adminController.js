@@ -2,7 +2,7 @@ const helpers = require('../services/helpers')
 const adminModel = require('../models').Admin
 const videoModel = require('../models').Video
 const bcrypt = require('bcryptjs')
-const JWT = require('../services/JWT');
+const serviceJWT_admin = require('../services/JWT_admin');
 const userModel = require('../models').user
 
 const REGEX_EMAIL = /(?:[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*|"(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21\x23-\x5b\x5d-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])*")@(?:(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?|\[(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?|[a-z0-9-]*[a-z0-9]:(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21-\x5a\x53-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])+)\])/;
@@ -69,7 +69,7 @@ class admin extends helpers{
                     if (await bcrypt.compare(password, admin.password)){
                         responseController.status = 201
                         responseController.success = "vous etre co"
-                        responseController.token = JWT.generateTokenForAdmin(admin)
+                        responseController.token = serviceJWT_admin.generateTokenForAdmin(admin)
                         responseController.admin.id = admin.id
                         responseController.admin.niveau = admin.niveau
                         responseController.admin.firstname = admin.firstname
