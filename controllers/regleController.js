@@ -44,5 +44,80 @@ class regle extends helpers{
         }
         return responseController
     }
+    static async getRegle(data){
+        var responseController = {
+            success: null,
+            successMessage: null,
+            errors: [],
+            status: null,
+            regle: null,
+        }
+
+        if(data.body.id){
+            var regle = await regleModel.findOne({where: {id: data.body.id}})
+            if(regle != null){
+                responseController.regle = regle
+                responseController.status = 201
+                responseController.success = true
+                responseController.successMessage = "ok"
+            }else{
+                responseController.status = 401
+                responseController.errors.push('echec de recuperation de la regle!')
+                responseController.success = false
+            }
+        }else{
+            responseController.status = 401
+            responseController.errors.push('aucun id!')
+            responseController.success = false
+        }
+
+        return responseController
+    }
+    static async getRegles(){
+        var responseController = {
+            success: null,
+            successMessage: null,
+            errors: [],
+            status: null,
+            regles: null,
+        }
+        var regles = await regleModel.findAll()
+        if(regles != null){
+            responseController.regles = regles
+            responseController.status = 201
+            responseController.success = true
+            responseController.successMessage = "ok"
+        }else{
+            responseController.status = 401
+            responseController.errors.push('echec de recuperation de la regle!')
+            responseController.success = false
+        }
+        return responseController
+    }
+    static async delete(data){
+        var responseController = {
+            success: null,
+            successMessage: null,
+            errors: [],
+            status: null,
+        }
+        if(data.body.id){
+            if(await regleModel.destroy({where: {id: data.body.id}})){
+                responseController.success = true
+                responseController.successMessage = "regle bien suprimer!"
+                responseController.status = 201
+            }else{
+                responseController.success = true
+                responseController.errors.push("regle bien suprimer!")
+                responseController.status = 201
+            }
+            
+        }else{
+            responseController.status = 401
+            responseController.status = false
+            responseController.errors.push('aucun id!')
+        }
+        return responseController
+    }
 }
 module.exports = regle
