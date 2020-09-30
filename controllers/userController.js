@@ -193,6 +193,7 @@ class User extends helpers{
             responseController.success = true
         }else{
             responseController.errors.push('aucun utilisateur!')
+            responseController.success = false
         }
 
         return responseController
@@ -200,6 +201,7 @@ class User extends helpers{
     static async requisteMentoring(data){
         var responseController = {
             success: null,
+            successMessage: null,
             errors: [],
             status: null,
         }
@@ -216,14 +218,17 @@ class User extends helpers{
             if(requestMentoringExist == null){
                 await requestMentoringModel.create(data.body)
                 responseController.status = 201
-                responseController.success = "demande de mentoring bien envoyer!"
+                responseController.successMessage = "demande de mentoring bien envoyer!"
+                responseController.success = true
             }else{
                 responseController.status = 403
                 responseController.errors.push('vous avez deja une demande de mentoring!')
+                responseController.success = false
             }
         }else{
             responseController.status = 403
             responseController.errors.push('id mentore non resegnier!')
+            responseController.success = false
         }
 
         return responseController
@@ -232,6 +237,7 @@ class User extends helpers{
     static async crud(data){
         var responseController = {
             success: "",
+            successMessage: null,
             errors: [],
             status: 201
         }
@@ -248,10 +254,12 @@ class User extends helpers{
 
         if(up[0] == 1){
             responseController.status = 201
-            responseController.success = "modification bien enregistrer!"
+            responseController.successMessage = "modification bien enregistrer!"
+            responseController.success = true
         }else if(up[0] == 0){
             responseController.errors.push("modification impossible!")
             responseController.status = 403
+            responseController.success = false
         }    
         return responseController
     }

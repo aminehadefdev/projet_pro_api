@@ -13,7 +13,8 @@ describe("user", ()=>{
         }
         let registerUser = await userController.register(data)
         expect(registerUser).to.eql({
-            success: "enregistrement reussi :)",
+            success: true,
+            successMessage: "enregistrement reussi :)",
             errors: [],
             status: 201
         })

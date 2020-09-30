@@ -1,6 +1,5 @@
 const helpers = require('../services/helpers')
 const adminModel = require('../models').Admin
-const videoModel = require('../models').Video
 const bcrypt = require('bcryptjs')
 const serviceJWT_admin = require('../services/JWT_admin');
 const userModel = require('../models').user
@@ -93,6 +92,60 @@ class admin extends helpers{
         }
         return responseController
     }
+    static async getAdmin(data){
+        var responseController = {
+            success: null,
+            successMessage: null,
+            errors: [],
+            status: null,
+            admin: null,
+        }
+        if(data.body.id){
+            var admin = await userModel.findOne({
+                where: {id: data.body.id},
+                attributes: ['id','firstname','lastname','email','niveau']
+            })
+            if(admin != null){
+                responseController.admin = admin
+                responseController.success = true
+                responseController.successMessage = "ok"
+                responseController.status = 201
+            }else{
+                responseController.success = false
+                responseController.errors.push('utilisateur introuvable!')
+                responseController.status = 401
+            }
+        }else{
+            responseController.success = false
+            responseController.errors.push('aucun id!!!')
+            responseController.status = 401
+        }
+
+        return responseController
+    }
+    static async getAdmins(){
+        var responseController = {
+            success: null,
+            successMessage: null,
+            errors: [],
+            status: null,
+            admins: null,
+        }
+        var admins = await userModel.findAll({
+            attributes: ['id','firstname','lastname','email','niveau']
+        })
+        if(admins != null){
+            responseController.admins = admins
+            responseController.success = true
+            responseController.successMessage = "ok"
+            responseController.status = 201
+        }else{
+            responseController.success = false
+            responseController.errors.push('utilisateur introuvable!')
+            responseController.status = 401
+        }
+        return responseController
+    }
     static async acceptUser(data){
         var responseController = {
             success: "",
@@ -151,7 +204,6 @@ class admin extends helpers{
         }
         return responseController
     }
-    
 }
 
 module.exports = admin
