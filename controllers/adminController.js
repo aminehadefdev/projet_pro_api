@@ -92,6 +92,31 @@ class admin extends helpers{
         }
         return responseController
     }
+    static async delete(data){
+        var responseController = {
+            success: null,
+            successMessage: null,
+            errors: [],
+            status: null,
+        }
+        if(data.body.id){
+            if(await adminModel.destroy({where: {id: data.body.id}})){
+                responseController.success = true
+                responseController.successMessage = "admin bien suprimer!"
+                responseController.status = 201
+            }else{
+                responseController.success = true
+                responseController.errors.push("admin bien suprimer!")
+                responseController.status = 201
+            }
+            
+        }else{
+            responseController.status = 401
+            responseController.status = false
+            responseController.errors.push('aucun id!')
+        }
+        return responseController
+    }
     static async getAdmin(data){
         var responseController = {
             success: null,
