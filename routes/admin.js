@@ -14,16 +14,32 @@ module.exports = (app)=>{
         var response = await adminController.login(req.body)
         res.status(response.status).json(response)
     })
+    app.post("/admin/accept/user", serviceJWT_admin.AdminIsAutorisedLevelTwo, async (req, res)=>{
+        var response = await adminController.acceptUser(req)
+        res.status(response.status).json(response)
+    })
+    app.post("/admin/refuse/user", serviceJWT_admin.AdminIsAutorisedLevelTwo, async (req, res)=>{
+        var response = await adminController.refuseUser(req)
+        res.status(response.status).json(response)
+    })
+    app.post("/admin/delete", serviceJWT_admin.AdminIsAutorisedLevelTwo, async (req, res)=>{
+        var response = await adminController.delete(req)
+        res.status(response.status).json(response)
+    })
+    app.post("/admin/get", serviceJWT_admin.AdminIsAutorisedLevelTwo, async (req, res)=>{
+        var response = await adminController.getAdmin(req)
+        res.status(response.status).json(response)
+    })
+    app.post("/admin/gets", serviceJWT_admin.AdminIsAutorisedLevelTwo, async (req, res)=>{
+        var response = await adminController.getAdmins()
+        res.status(response.status).json(response)
+    })
     app.post("/admin/video/add", serviceJWT_admin.AdminIsAutorisedLevelOne ,async (req, res)=>{
         var response = await videoContoller.register(req)
         res.status(response.status).json(response)
     })
     app.post("/admin/regle/add", serviceJWT_admin.AdminIsAutorisedLevelThree, async (req, res)=>{
         var response = await regleController.register(req)
-        res.status(response.status).json(response)
-    })
-    app.post("/admin/accept/user", serviceJWT_admin.AdminIsAutorisedLevelTwo, async (req, res)=>{
-        var response = await adminController.acceptUser(req)
         res.status(response.status).json(response)
     })
     app.post("/admin/aventage/add", serviceJWT_admin.AdminIsAutorisedLevelThree, async (req,res)=>{

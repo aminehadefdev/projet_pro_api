@@ -263,5 +263,30 @@ class User extends helpers{
         }    
         return responseController
     }
+    static async delete(data){
+        var responseController = {
+            success: null,
+            successMessage: null,
+            errors: [],
+            status: null,
+        }
+        if(data.body.id){
+            if(await userModel.destroy({where: {id: data.body.id}})){
+                responseController.success = true
+                responseController.successMessage = "user bien suprimer!"
+                responseController.status = 201
+            }else{
+                responseController.success = true
+                responseController.errors.push("user bien suprimer!")
+                responseController.status = 201
+            }
+            
+        }else{
+            responseController.status = 401
+            responseController.status = false
+            responseController.errors.push('aucun id!')
+        }
+        return responseController
+    }
 }
 module.exports = User
