@@ -1,4 +1,3 @@
-const { response } = require('express')
 const helpers = require('../services/helpers')
 const avantageModel = require('../models').avantages
 
@@ -50,18 +49,17 @@ class avantage extends helpers {
                 responseController.status = 201
             }else{
                 responseController.success = false
-                responseController.successMessage = 'avantage introuvanle!'
+                responseController.errors.push('avantage introuvanle!')
                 responseController.status = 401
             }
         }else{
             responseController.success = false
-            responseController.successMessage = 'id inconue!'
+            responseController.errors.push('id inconue!')
             responseController.status = 401
         }
 
         return responseController
     }
-
     static async getAvantages(){
         var responseController = {
             success: null,
@@ -80,9 +78,67 @@ class avantage extends helpers {
             responseController.status = 201
         }else{
             responseController.success = false
-            responseController.successMessage = 'avantages introuvanle!'
+            responseController.errors.push('avantages introuvanle!')
             responseController.status = 401
         }
+        return responseController
+    }
+    static async delete(data){
+        var responseController = {
+            success: null,
+            successMessage: null,
+            errors: [],
+            status: null,
+        }
+        if(data.body.id){
+            if(await avantageModel.destroy({where: {id: data.body.id}})){
+                responseController.success = true
+                responseController.successMessage = "avantage bien suprimer!"
+                responseController.status = 201
+            }else{
+                responseController.success = true
+                responseController.errors.push("avantage bien suprimer!")
+                responseController.status = 201
+            }
+            
+        }else{
+            responseController.status = 401
+            responseController.status = false
+            responseController.errors.push('aucun id!')
+        }
+        return responseController
+    }
+    static async update(data){
+        var responseController = {
+            success: null,
+            successMessage: null,
+            errors: [],
+            status: null,
+        }
+        var avantage = {}
+        data.body.idAdmin = data.decoded.id
+
+        if(data.body.socityName)avantage.socityName = data.body.socityName
+        if(data.body.link)avantage.link = data.body.link
+        if(data.body.description)avantage.description = data.body.description
+
+        if(data.body.id){
+            var up = await avantageModel.update(avantage, {where: {id: data.body.id}})
+            if(up[0] == 1){
+                data.status = 201
+                data.success = true
+                data.successMessage = "modification bien enregistrer!"
+            }else if(up[0] == 1){
+                data.errors.push('modification impossible!')
+                data.success = false
+                data.status = 401
+            }
+        }else{
+            data.errors.push('aucun id')
+            data.success = false
+            data.status = 401
+        }
+
         return responseController
     }
 }
