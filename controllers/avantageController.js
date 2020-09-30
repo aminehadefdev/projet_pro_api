@@ -7,7 +7,8 @@ const REGEX_LINK = /^(http:\/\/www\.|https:\/\/www\.|http:\/\/|https:\/\/)?[a-z0
 class avantage extends helpers {
     static async register(data){
         var responseController = {
-            success: "",
+            success: null,
+            successMessage: null,
             errors: [],
             status: null
         }
@@ -15,7 +16,8 @@ class avantage extends helpers {
             if(REGEX_LINK.test(data.body.link)){
                 data.body.idAdmin = data.decoded.id
                 await avantageModel.create(data.body)
-                responseController.success = "avantage bien enregistrer!"
+                responseController.successMessage = "avantage bien enregistrer!"
+                responseController.success = true
                 responseController.status = 201
             }else{
                 this.checkIfDataIsValide(REGEX_LINK, data.body.link, responseController, "link non valide!")
@@ -26,6 +28,61 @@ class avantage extends helpers {
             this.checkIfDataIsNotEmpty(data.body.description, responseController, "le champ description est obligatoir!")
         }
 
+        return responseController
+    }
+    static async getAvantage(data){
+        var responseController = {
+            success: null,
+            successMessage: null,
+            errors: [],
+            status: null,
+            avantage: null,
+        }
+
+        if(data.body.id){
+            var avantage = await avantageModel.findOne({
+                where: {id: data.body.id}
+            })
+            if(avantage != null){
+                responseController.avantage = avantage
+                responseController.success = true
+                responseController.successMessage = 'ok'
+                responseController.status = 201
+            }else{
+                responseController.success = false
+                responseController.successMessage = 'avantage introuvanle!'
+                responseController.status = 401
+            }
+        }else{
+            responseController.success = false
+            responseController.successMessage = 'id inconue!'
+            responseController.status = 401
+        }
+
+        return responseController
+    }
+
+    static async getAvantages(){
+        var responseController = {
+            success: null,
+            successMessage: null,
+            errors: [],
+            status: null,
+            avantages: null,
+        }
+
+        var avantages = await avantageModel.findAll()
+
+        if(avantages != null){
+            responseController.avantages = avantages
+            responseController.success = true
+            responseController.successMessage = 'ok'
+            responseController.status = 201
+        }else{
+            responseController.success = false
+            responseController.successMessage = 'avantages introuvanle!'
+            responseController.status = 401
+        }
         return responseController
     }
 }
