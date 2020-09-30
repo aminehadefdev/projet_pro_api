@@ -107,6 +107,31 @@ class video extends helper{
           }
           return responseController
      }
+     static async delete(data){
+          var responseController = {
+              success: null,
+              successMessage: null,
+              errors: [],
+              status: null,
+          }
+          if(data.body.id){
+              if(await videoModel.destroy({where: {id: data.body.id}})){
+                  responseController.success = true
+                  responseController.successMessage = "video bien suprimer!"
+                  responseController.status = 201
+              }else{
+                  responseController.success = true
+                  responseController.errors.push("video bien suprimer!")
+                  responseController.status = 201
+              }
+              
+          }else{
+              responseController.status = 401
+              responseController.status = false
+              responseController.errors.push('aucun id!')
+          }
+          return responseController
+     }
 }
 
 module.exports = video
