@@ -24,7 +24,7 @@ class serviceJWT_user {
   }
   static UserIsAutorised(req, res, next) {
     if(req.body.token == null || req.body.token == undefined){
-      return res.json({
+      return res.status(401).json({
         success: false,
         message: 'Token is not difined'
       });
@@ -36,7 +36,7 @@ class serviceJWT_user {
     if(token){
       jwt.verify(token, JWT_SIGN_SECRET, (err, decoded) => {
         if(err){
-          return res.json({
+          return res.status(401).json({
             success: false,
             message: 'Token is not valid'
           });
@@ -46,7 +46,7 @@ class serviceJWT_user {
         }
       });
     }else{
-      return res.json({
+      return res.status(401).json({
         success: false,
         message: 'Auth token is not supplied'
       });

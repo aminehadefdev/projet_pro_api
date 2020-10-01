@@ -13,107 +13,88 @@ class serviceJWT_admin {
       })
   }
   static AdminIsAutorisedLevelOne(req, res, next) {
-      var token = req.body.token
-      if (token.startsWith('Bearer ')) {
-          token = token.slice(7, token.length);
-      }
-
-      if (token) {
-          jwt.verify(token, JWT_SIGN_SECRET, (err, decoded) => {
-            if (err) {
-                console.log(err)
-              return res.json({
-                success: false,
-                message: 'Token is not valid'
-              });
-            } else {
-              req.decoded = decoded;
-              if(decoded.niveau >= 1){
-                next();
-              }else{
-                return res.json({
-                  success: false,
-                  message: "votre niveau d'administration n'ai pas sufisant!"
-                })
-              }
-            }
-          });
-        } else {
+    var token  
+    if(req.body.token){
+      token = req.body.token
+    }else{
+      return res.status(401).json({
+        success: false,
+        message: 'Token is not valid'
+      });
+    }
+    if(token.startsWith('Bearer ')){
+        token = token.slice(7, token.length);
+    }
+    if(token){
+      jwt.verify(token, JWT_SIGN_SECRET, (err, decoded) => {
+        if (err) {
+          console.log(err)
           return res.json({
             success: false,
-            message: 'Auth token is not supplied'
+            message: 'Token is not valid'
           });
+        }else{
+          req.decoded = decoded;
+          if(decoded.niveau >= 1){
+            next();
+          }else{
+            return res.json({
+              success: false,
+              message: "votre niveau d'administration n'ai pas sufisant!"
+            })
+          }
         }
+      });
+    }else{
+      return res.json({
+        success: false,
+        message: 'Auth token is not supplied'
+      });
+    }
   }
   static AdminIsAutorisedLevelTwo(req, res, next) {
-    var token = req.body.token
-    if (token.startsWith('Bearer ')) {
-        token = token.slice(7, token.length);
+    var token
+    if(req.body.token){
+      token = req.body.token
+    }else{
+      return res.status(401).json({
+        success: false,
+        message: 'Token is not valid'
+      });
     }
-
-    if (token) {
-        jwt.verify(token, JWT_SIGN_SECRET, (err, decoded) => {
-          if (err) {
-              console.log(err)
-            return res.json({
-              success: false,
-              message: 'Token is not valid'
-            });
-          } else {
-            req.decoded = decoded;
-            if(decoded.niveau >= 2){
-              next();
-            }else{
-              return res.json({
-                success: false,
-                message: "votre niveau d'administration n'ai pas sufisant!"
-              })
-            }
-          }
-        });
-      } else {
-        return res.json({
-          success: false,
-          message: 'Auth token is not supplied'
-        });
-      }
-  }
-  static AdminIsAutorisedLevelTwo(req, res, next) {
-    var token = req.body.token
-    if (token.startsWith('Bearer ')) {
-        token = token.slice(7, token.length);
+    if(token.startsWith('Bearer ')){
+      token = token.slice(7, token.length);
     }
-
-    if (token) {
-        jwt.verify(token, JWT_SIGN_SECRET, (err, decoded) => {
-          if (err) {
-              console.log(err)
-            return res.json({
+    if(token){
+      jwt.verify(token, JWT_SIGN_SECRET, (err, decoded) => {
+        if (err) {
+          console.log(err)
+          return res.status(401).json({
+            success: false,
+            message: 'Token is not valid'
+          });
+        }else{
+          req.decoded = decoded;
+          if(decoded.niveau >= 2){
+            next();
+          }else{
+            return res.status(401).json({
               success: false,
-              message: 'Token is not valid'
-            });
-          } else {
-            req.decoded = decoded;
-            if(decoded.niveau >= 3){
-              next();
-            }else{
-              return res.json({
-                success: false,
-                message: "votre niveau d'administration n'ai pas sufisant!"
-              })
-            }
+              message: "votre niveau d'administration n'ai pas sufisant!"
+            })
           }
-        });
-      } else {
-        return res.json({
-          success: false,
-          message: 'Auth token is not supplied'
-        });
-      }
+        }
+      });
+    }else{
+      return res.status(401).json({
+        success: false,
+        message: 'Auth token is not supplied'
+      });
+    }
   }
   static AdminIsAutorisedLevelThree(req, res, next) {
     if(req.body.token === null || req.body.token == undefined){
-      return res.json({
+      return res.status(401).json({
         success: false,
         message: "aucun token"
       })
@@ -127,7 +108,7 @@ class serviceJWT_admin {
         jwt.verify(token, JWT_SIGN_SECRET, (err, decoded) => {
           if (err) {
               console.log(err)
-            return res.json({
+            return res.status(401).json({
               success: false,
               message: 'Token is not valid'
             });
@@ -136,7 +117,7 @@ class serviceJWT_admin {
             if(decoded.niveau >= 3){
               next();
             }else{
-              return res.json({
+              return res.status(401).json({
                 success: false,
                 message: "votre niveau d'administration n'ai pas sufisant!"
               })
