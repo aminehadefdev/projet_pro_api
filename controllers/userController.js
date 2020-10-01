@@ -24,10 +24,16 @@ class User extends helpers{
                 if(!userExist){
                     data.password = await bcrypt.hash(data.password, 10)
                     data.isAccepted = 0
-                    await userModel.create(data)
-                    responseController.successMessage = "enregistrement reussi :)"
-                    responseController.success = true
-                    responseController.status = 201
+                    var newUser = await userModel.create(data)
+                    if(newUser){
+                        responseController.successMessage = "enregistrement reussi :)"
+                        responseController.success = true
+                        responseController.status = 201
+                    }else{
+                        responseController.status = 401
+                        responseController.success = false
+                        responseController.errors.push('un probles est survenu!')
+                    }
                 }else{
                     responseController.errors.push("email deja enregistrer!")
                     responseController.status = 401

@@ -3,9 +3,25 @@ const app = express()
 const env = require('dotenv').config().parsed
 const bodyParser = require('body-parser')
 const port = env.PORT || 8080
+//const { Sequelize } = require('sequelize');
 
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json())
+
+// async function testConnextionDB(){
+//     const sequelize = new Sequelize('projet_pro_development', 'root', null, {
+//         host: '127.0.0.1',
+//         dialect: 'mysql'
+//     });
+
+//     try {
+//         await sequelize.authenticate();
+//         console.log('connextion a la base de donner etablit')
+//     } catch (error) {
+//         console.error('echec connexion base de donner =>', error);
+//     }
+// }
+// testConnextionDB()
 
 const routes = require('./routes/index')(app)
 
