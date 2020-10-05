@@ -3,10 +3,12 @@ const app = express()
 const env = require('dotenv').config().parsed
 const bodyParser = require('body-parser')
 const port = env.PORT || 8080
+var cors = require('cors')
 //const { Sequelize } = require('sequelize');
 
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json())
+app.use(cors())
 
 // async function testConnextionDB(){
 //     const sequelize = new Sequelize('projet_pro_development', 'root', null, {
