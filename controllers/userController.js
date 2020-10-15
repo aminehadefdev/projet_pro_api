@@ -1,6 +1,7 @@
 
 const helpers = require('../services/helpers')
 const userModel = require('../models').user
+const adminModel = require('../models').Admin
 const requestMentoringModel = require('../models').requestMentoring
 const bcrypt = require('bcryptjs')
 const serviceJWT_user = require('../services/JWT_user')
@@ -18,7 +19,7 @@ class User extends helpers{
             errors: [],
             status: null
         }
-        if(data.firstname && data.lastname && data.email && data.password && data.description && data.role){
+        if(data.firstname && data.lastname && data.email && data.password && data.description && data.role && data.job){
             if(REGEX_NAME.test(data.firstname) && REGEX_NAME.test(data.lastname) && REGEX_EMAIL.test(data.email) && REGEX_PASSWORD.test(data.password)){
                 let userExist = await userModel.findOne({ where: { email: data.email } });
                 if(!userExist){
@@ -30,13 +31,13 @@ class User extends helpers{
                         responseController.success = true
                         responseController.status = 201
                     }else{
-                        responseController.status = 401
                         responseController.success = false
                         responseController.errors.push('un probles est survenu!')
+                        responseController.status = 409
                     }
                 }else{
                     responseController.errors.push("email deja enregistrer!")
-                    responseController.status = 401
+                    responseController.status = 409
                 }
             }else{
                 this.checkIfDataIsValide(REGEX_EMAIL, data.email, responseController, "le champ email doit etre valide exemple: toto@gmail.com!")
@@ -51,6 +52,8 @@ class User extends helpers{
             this.checkIfDataIsNotEmpty(data.password, responseController, "le champ password est obligatoire!")
             this.checkIfDataIsNotEmpty(data.description, responseController, "le champ description est obligatoire!")
             this.checkIfDataIsNotEmpty(data.role, responseController, "le champ role est obligatoire!")
+            this.checkIfDataIsNotEmpty(data.job, responseController, "le champ job est obligatoire!")
+
         }
         return responseController
     }
@@ -291,6 +294,29 @@ class User extends helpers{
             responseController.status = 401
             responseController.status = false
             responseController.errors.push('aucun id!')
+        }
+        return responseController
+    }
+    static async getAll(){
+        var responseController = {
+            success: null,
+            successMessage: null,
+            errors: [],
+            data: null,
+            status: null,
+        }
+
+        var users = await userModel.findAll({
+            include:{
+                model: adminModel,
+                attributes:["id","firstname", "lastname", "email"]
+            },
+            attributes:["id","firstname", "lastname", "email", "description", "role", "isAccepted", "idAdmin", "job"]
+        })
+        if(users){
+            responseController.data = users
+            responseController.success = true
+            responseController.status = 201
         }
         return responseController
     }

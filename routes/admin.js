@@ -75,4 +75,9 @@ module.exports = (app)=>{
         var response = await avantageController.delete(req)
         res.status(response.status).json(response)
     })
+
+    app.get('/admin/get/users', serviceJWT_admin.AdminIsAutorisedLevelOne, async (req, res)=>{
+        var response = await userController.getAll()
+        res.status(response.status).json(response)
+    })
 }

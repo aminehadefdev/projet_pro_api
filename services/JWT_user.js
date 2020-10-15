@@ -23,13 +23,18 @@ class serviceJWT_user {
     }
   }
   static UserIsAutorised(req, res, next) {
+    var token = ''
     if(req.body.token == null || req.body.token == undefined){
-      return res.status(401).json({
-        success: false,
-        message: 'Token is not difined'
-      });
+      if(req.query.token == null || req.query.token == undefined){
+        return res.status(401).json({
+          success: false,
+          message: 'Token is not difined'
+        });
+      }
+      token = req.query.token
+    }else{
+      token = req.body.token
     }
-    var token = req.body.token
     if(token.startsWith('Bearer ')) {
         token = token.slice(7, token.length);
     }
