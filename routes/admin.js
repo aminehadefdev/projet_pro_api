@@ -83,11 +83,11 @@ module.exports = (app)=>{
     })
 
     app.post("/admin/upgrad", serviceJWT_admin.AdminIsAutorisedLevelThree, async (req, res)=>{
-        var response = await userController.upgradAdmin(req)
+        var response = await adminController.upgradAdmin(req)
         res.status(response.status).json(response)
     })
     app.post("/admin/downgrade", serviceJWT_admin.AdminIsAutorisedLevelThree, async (req, res)=>{
-        var response = await userController.downgrade(req)
+        var response = await adminController.downgrade(req)
         res.status(response.status).json(response)
     })
 }

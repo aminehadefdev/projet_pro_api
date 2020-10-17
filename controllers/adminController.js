@@ -239,10 +239,11 @@ class admin extends helpers{
         if(data.body.id){
             var id = data.body.id
             if(REGEX_ID.test(id)){
-                var adminExist = await findOne({where: {id: id}})
+                var adminExist = await adminModel.findOne({where: {id: id}})
                 if(adminExist){
                     if(adminExist.niveau  < 3){
-                        var niveau = adminExist.niveau++
+                        var niveau = parseInt(adminExist.niveau)
+                        niveau++
                         var update = await adminModel.update({niveau: niveau}, {where: {id: id}})
                         responseController.success = true
                         responseController.status = 201
@@ -277,10 +278,11 @@ class admin extends helpers{
         if(data.body.id){
             var id = data.body.id
             if(REGEX_ID.test(id)){
-                var adminExist = await findOne({where: {id: id}})
+                var adminExist = await adminModel.findOne({where: {id: id}})
                 if(adminExist){
                     if(adminExist.niveau  > 1){
-                        var niveau = adminExist.niveau--
+                        var niveau = parseInt(adminExist.niveau)
+                        niveau--
                         var update = await adminModel.update({niveau: niveau}, {where: {id: id}})
                         responseController.success = true
                         responseController.status = 201
