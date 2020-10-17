@@ -156,7 +156,7 @@ class admin extends helpers{
             status: null,
             admins: null,
         }
-        var admins = await userModel.findAll({
+        var admins = await adminModel.findAll({
             attributes: ['id','firstname','lastname','email','niveau']
         })
         if(admins != null){
@@ -218,6 +218,80 @@ class admin extends helpers{
                 }else{
                     responseController.status = 403
                     responseController.errors.push('utilisateur introuvable!')
+                }
+            }else{
+                responseController.status = 403
+                responseController.errors.push('id incorecte!')
+            }
+        }else{
+            responseController.status = 403
+            responseController.errors.push('aucun id!')
+        }
+        return responseController
+    }
+    static async upgradAdmin(data){
+        var responseController = {
+            success: null,
+            errors: [],
+            status: null,
+        }
+
+        if(data.body.id){
+            var id = data.body.id
+            if(REGEX_ID.test(id)){
+                var adminExist = await findOne({where: {id: id}})
+                if(adminExist){
+                    if(adminExist.niveau  < 3){
+                        var niveau = adminExist.niveau++
+                        var update = await adminModel.update({niveau: niveau}, {where: {id: id}})
+                        responseController.success = true
+                        responseController.status = 201
+
+                    }else{
+                        responseController.status = 403
+                        responseController.errors.push('admin deja au niveau le plus heut!')
+                    }
+                }else{
+                    responseController.status = 403
+                    responseController.errors.push('aucun admin trouver!')
+                }
+            }else{
+                responseController.status = 403
+                responseController.errors.push('id incorecte!')
+            }
+        }else{
+            responseController.status = 403
+            responseController.errors.push('aucun id!')
+        }
+        return responseController
+    }
+
+
+    static async downgrade(data){
+        var responseController = {
+            success: null,
+            errors: [],
+            status: null,
+        }
+
+        if(data.body.id){
+            var id = data.body.id
+            if(REGEX_ID.test(id)){
+                var adminExist = await findOne({where: {id: id}})
+                if(adminExist){
+                    if(adminExist.niveau  > 1){
+                        var niveau = adminExist.niveau--
+                        var update = await adminModel.update({niveau: niveau}, {where: {id: id}})
+                        responseController.success = true
+                        responseController.status = 201
+
+                    }else{
+                        responseController.status = 403
+                        responseController.errors.push("l'admin est deja au niveau le plus bas!")
+                    }
+                }else{
+                    responseController.status = 403
+                    responseController.errors.push('aucun admin trouver!')
                 }
             }else{
                 responseController.status = 403

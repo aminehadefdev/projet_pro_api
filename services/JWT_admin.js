@@ -56,14 +56,17 @@ class serviceJWT_admin {
     }
   }
   static AdminIsAutorisedLevelTwo(req, res, next) {
-    var token
-    if(req.body.token){
-      token = req.body.token
+    var token = ''
+    if(req.body.token == null || req.body.token == undefined){
+      if(req.query.token == null || req.query.token == undefined){
+        return res.status(401).json({
+          success: false,
+          message: 'Token is not difined'
+        });
+      }
+      token = req.query.token
     }else{
-      return res.status(401).json({
-        success: false,
-        message: 'Token is not valid'
-      });
+      token = req.body.token
     }
     if(token.startsWith('Bearer ')){
       token = token.slice(7, token.length);
@@ -96,13 +99,18 @@ class serviceJWT_admin {
     }
   }
   static AdminIsAutorisedLevelThree(req, res, next) {
-    if(req.body.token === null || req.body.token == undefined){
-      return res.status(401).json({
-        success: false,
-        message: "aucun token"
-      })
+    var token = ''
+    if(req.body.token == null || req.body.token == undefined){
+      if(req.query.token == null || req.query.token == undefined){
+        return res.status(401).json({
+          success: false,
+          message: 'Token is not difined'
+        });
+      }
+      token = req.query.token
+    }else{
+      token = req.body.token
     }
-    var token = req.body.token
     if (token.startsWith('Bearer ')) {
         token = token.slice(7, token.length);
     }

@@ -5,6 +5,7 @@ const regleController = require('../controllers/regleController')
 const userController = require('../controllers/userController')
 
 const serviceJWT_admin = require('../services/JWT_admin')
+const { use } = require('chai')
 
 module.exports = (app)=>{
     app.post("/admin/register", serviceJWT_admin.AdminIsAutorisedLevelThree ,async (req, res)=>{
@@ -78,6 +79,15 @@ module.exports = (app)=>{
 
     app.get('/admin/get/users', serviceJWT_admin.AdminIsAutorisedLevelOne, async (req, res)=>{
         var response = await userController.getAll()
+        res.status(response.status).json(response)
+    })
+
+    app.post("/admin/upgrad", serviceJWT_admin.AdminIsAutorisedLevelThree, async (req, res)=>{
+        var response = await userController.upgradAdmin(req)
+        res.status(response.status).json(response)
+    })
+    app.post("/admin/downgrade", serviceJWT_admin.AdminIsAutorisedLevelThree, async (req, res)=>{
+        var response = await userController.downgrade(req)
         res.status(response.status).json(response)
     })
 }
