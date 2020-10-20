@@ -1,6 +1,6 @@
 const videoModel = require('../models').Video
 const helper = require('../services/helpers')
-
+const fs = require('fs')
 class video extends helper{
      static async register(data){
         var responseController = {
@@ -8,11 +8,13 @@ class video extends helper{
             successMessage: null,
             errors: [],
             status: 201,
+            data : null
         }
         if(data.body.path && data.body.role && data.body.description && data.body.title){
             data.body.image = data.file.filename
             data.body.idAdmin = data.decoded.id
-            await videoModel.create(data.body)
+            var cre = await videoModel.create(data.body)
+            responseController.data = cre
             responseController.status = 201
             responseController.success = "video bien enregestrer!"
         }else{
@@ -88,25 +90,25 @@ class video extends helper{
           return responseController
      }
      static async getVideos(){
-          var responseController = {
-              success: null,
-              successMessage: null,
-              errors: [],
-              status: null,
-              videos: null,
-          }
-          var videos = await videoModel.findAll()
-          if(videos != null){
-              responseController.videos = videos
-              responseController.success = true
-              responseController.successMessage = "ok"
-              responseController.status = 201
-          }else{
-              responseController.success = false
-              responseController.errors.push('videos introuvable!')
-              responseController.status = 401
-          }
-          return responseController
+        var responseController = {
+            success: null,
+            successMessage: null,
+            errors: [],
+            status: null,
+            videos: null,
+        }
+        var videos = await videoModel.findAll()
+        if(videos != null){
+            responseController.videos = videos
+            responseController.success = true
+            responseController.successMessage = "ok"
+            responseController.status = 201
+        }else{
+            responseController.success = false
+            responseController.status = 401
+            responseController.errors.push("aucune video trouver!")
+        }
+        return responseController
      }
      static async delete(data){
           var responseController = {
@@ -116,21 +118,35 @@ class video extends helper{
               status: null,
           }
           if(data.body.id){
-              if(await videoModel.destroy({where: {id: data.body.id}})){
-                  responseController.success = true
-                  responseController.successMessage = "video bien suprimer!"
-                  responseController.status = 201
+            var nameImage = await videoModel.findOne({where:{id: data.body.id}})
+            if(nameImage != null){
+                nameImage = nameImage.image
+                fs.unlink("./public/" + nameImage, (err) => {
+                    if(err){
+                        console.error(err)
+                    }
+                })
+                var isDestroyd = await videoModel.destroy({where: {id: data.body.id}})
+                if(isDestroyd){
+                    responseController.success = true
+                    responseController.successMessage = "video bien suprimer!"
+                    responseController.status = 201
+                  }else{
+                    responseController.success = false
+                    responseController.errors.push("video non suprimer!")
+                    responseController.status = 201
+                  }
+                  
               }else{
-                  responseController.success = true
-                  responseController.errors.push("video bien suprimer!")
-                  responseController.status = 201
+                  responseController.status = 401
+                  responseController.success = false
+                  responseController.errors.push('aucun id!')
               }
-              
-          }else{
-              responseController.status = 401
-              responseController.status = false
-              responseController.errors.push('aucun id!')
-          }
+            }else{
+                responseController.status = 401
+                responseController.status = false
+                responseController.errors.push('video introuvable!')
+            }
           return responseController
      }
 }

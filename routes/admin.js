@@ -55,7 +55,7 @@ module.exports = (app)=>{
         var response = await videoContoller.update(req)
         res.status(response.status).json(response)
     })
-    app.post("/admin/video/delete", serviceJWT_admin.AdminIsAutorisedLevelThree, async (req, res)=>{
+    app.post("/admin/video/delete", serviceJWT_admin.AdminIsAutorisedLevelOne, async (req, res)=>{
         var response = await videoContoller.delete(req)
         res.status(response.status).json(response)
     })

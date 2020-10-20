@@ -16,7 +16,7 @@ module.exports = {
           "min": 1,
           "max": 2
         }),
-        isAccepted: 1,
+        isAccepted: 0,
         idAdmin: 1,
         job: faker.name.jobTitle().substring(4)
       })
