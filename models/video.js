@@ -19,6 +19,7 @@ module.exports = (sequelize, DataTypes) => {
     description: DataTypes.TEXT,
     title: DataTypes.STRING,
     idAdmin: DataTypes.INTEGER,
+    image: DataTypes.TEXT
   }, {
     sequelize,
     modelName: 'Video',

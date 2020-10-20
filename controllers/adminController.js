@@ -12,20 +12,23 @@ const REGEX_ID = /^[0-9]+$/
 class admin extends helpers{
     static async register(data){
         var responseController = {
-            success: "",
+            success: null,
             errors: [],
-            status: null
+            status: null,
+            id:null
         }
         if(data.firstname && data.lastname && data.email && data.password && data.niveau){
             if(REGEX_NAME.test(data.firstname) && REGEX_NAME.test(data.lastname) && REGEX_EMAIL.test(data.email) && REGEX_PASSWORD.test(data.password)){
                 let adminExist = await adminModel.findOne({ where: { email: data.email } });
                 if(!adminExist){
                     data.password = await bcrypt.hash(data.password, 10)
-                    await adminModel.create(data)
-                    responseController.success = "enregistrement reussi :)"
+                    var a = await adminModel.create(data)
+                    responseController.id = a.id
+                    responseController.success = true
                     responseController.status = 201
                 }else{
                     responseController.errors.push("email deja enregistrer!")
+                    responseController.success = false
                     responseController.status = 401
                 }
             }else{
@@ -99,6 +102,7 @@ class admin extends helpers{
             errors: [],
             status: null,
         }
+        
         if(data.body.id){
             if(await adminModel.destroy({where: {id: data.body.id}})){
                 responseController.success = true
@@ -266,8 +270,6 @@ class admin extends helpers{
         }
         return responseController
     }
-
-
     static async downgrade(data){
         var responseController = {
             success: null,

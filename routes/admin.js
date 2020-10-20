@@ -4,8 +4,15 @@ const avantageController = require('../controllers/avantageController')
 const regleController = require('../controllers/regleController')
 const userController = require('../controllers/userController')
 
+var multer  = require('multer')
+var upload = multer({ dest: 'public/', fileFilter: (req, file,cb)=>{
+    if(file.mimetype !== 'image/png' && file.mimetype !== 'image/jpeg'){
+        return cb(null, false, console.log(file))
+    }
+    cb(null, true)
+}})
+
 const serviceJWT_admin = require('../services/JWT_admin')
-const { use } = require('chai')
 
 module.exports = (app)=>{
     app.post("/admin/register", serviceJWT_admin.AdminIsAutorisedLevelThree ,async (req, res)=>{
@@ -40,7 +47,7 @@ module.exports = (app)=>{
         var response = await adminController.getAdmins()
         res.status(response.status).json(response)
     })
-    app.post("/admin/video/add", serviceJWT_admin.AdminIsAutorisedLevelOne ,async (req, res)=>{
+    app.post("/admin/video/add", serviceJWT_admin.AdminIsAutorisedLevelOne, upload.single('image') ,async (req, res)=>{
         var response = await videoContoller.register(req)
         res.status(response.status).json(response)
     })
