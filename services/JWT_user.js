@@ -26,12 +26,16 @@ class serviceJWT_user {
     var token = ''
     if(req.body.token == null || req.body.token == undefined){
       if(req.query.token == null || req.query.token == undefined){
-        return res.status(401).json({
-          success: false,
-          message: 'Token is not difined'
-        });
+        if(req.headers.token == null || req.headers.token == undefined){
+          return res.status(401).json({
+            success: false,
+            message: 'Token is not difined'
+          });
+        }
+        token = req.headers.token
+      }else{
+        token = req.query.token
       }
-      token = req.query.token
     }else{
       token = req.body.token
     }
