@@ -32,6 +32,18 @@ module.exports = {
         allowNull: false,
         type: Sequelize.TEXT
       },
+      age: {
+        allowNull: false,
+        type: Sequelize.INTEGER
+      },
+      name: {
+        allowNull: false,
+        type: Sequelize.STRING
+      },
+      job: {
+        allowNull: false,
+        type: Sequelize.STRING
+      },
       createdAt: {
         allowNull: false,
         type: Sequelize.DATE

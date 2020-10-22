@@ -10,7 +10,7 @@ class video extends helper{
             status: 201,
             data : null
         }
-        if(data.body.path && data.body.role && data.body.description && data.body.title){
+        if(data.body.path && data.body.role && data.body.description && data.body.title && data.body.name && data.body.job && data.body.age){
             data.body.image = data.file.filename
             data.body.idAdmin = data.decoded.id
             var cre = await videoModel.create(data.body)
