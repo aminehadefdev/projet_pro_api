@@ -19,13 +19,14 @@ class User extends helpers{
             errors: [],
             status: null
         }
-        if(data.firstname && data.lastname && data.email && data.password && data.description && data.role && data.job){
-            if(REGEX_NAME.test(data.firstname) && REGEX_NAME.test(data.lastname) && REGEX_EMAIL.test(data.email) && REGEX_PASSWORD.test(data.password)){
-                let userExist = await userModel.findOne({ where: { email: data.email } });
+        if(data.body.firstname && data.body.lastname && data.body.email && data.body.password && data.body.description && data.body.role && data.body.job){
+            if(REGEX_NAME.test(data.body.firstname) && REGEX_NAME.test(data.body.lastname) && REGEX_EMAIL.test(data.body.email) && REGEX_PASSWORD.test(data.body.password)){
+                let userExist = await userModel.findOne({ where: { email: data.body.email } });
                 if(!userExist){
-                    data.password = await bcrypt.hash(data.password, 10)
-                    data.isAccepted = 0
-                    var newUser = await userModel.create(data)
+                    data.body.password = await bcrypt.hash(data.body.password, 10)
+                    data.body.isAccepted = 0
+                    data.body.photoProfile = data.file.filename
+                    var newUser = await userModel.create(data.body)
                     if(newUser){
                         responseController.successMessage = "enregistrement reussi :)"
                         responseController.success = true
@@ -40,19 +41,19 @@ class User extends helpers{
                     responseController.status = 409
                 }
             }else{
-                this.checkIfDataIsValide(REGEX_EMAIL, data.email, responseController, "le champ email doit etre valide exemple: toto@gmail.com!")
-                this.checkIfDataIsValide(REGEX_NAME, data.firstname, responseController, "le firstname doit contenir que des lettre!")
-                this.checkIfDataIsValide(REGEX_NAME, data.lastname, responseController, "le lastname doit contenir que des lettre!")
-                this.checkIfDataIsValide(REGEX_PASSWORD, data.password, responseController, "le champ password doit contenir au minimum 8 caracteres dont au moins une majuscule une minuscule et un caracter special!")
+                this.checkIfDataIsValide(REGEX_EMAIL, data.body.email, responseController, "le champ email doit etre valide exemple: toto@gmail.com!")
+                this.checkIfDataIsValide(REGEX_NAME, data.body.firstname, responseController, "le firstname doit contenir que des lettre!")
+                this.checkIfDataIsValide(REGEX_NAME, data.body.lastname, responseController, "le lastname doit contenir que des lettre!")
+                this.checkIfDataIsValide(REGEX_PASSWORD, data.body.password, responseController, "le champ password doit contenir au minimum 8 caracteres dont au moins une majuscule une minuscule et un caracter special!")
             }
         }else{
-            this.checkIfDataIsNotEmpty(data.firstname, responseController, "le champ firstname est obligatoire!")
-            this.checkIfDataIsNotEmpty(data.lastname, responseController, "le champ lastname est obligatoire!")
-            this.checkIfDataIsNotEmpty(data.email, responseController, "le champ email est obligatoire!")
-            this.checkIfDataIsNotEmpty(data.password, responseController, "le champ password est obligatoire!")
-            this.checkIfDataIsNotEmpty(data.description, responseController, "le champ description est obligatoire!")
-            this.checkIfDataIsNotEmpty(data.role, responseController, "le champ role est obligatoire!")
-            this.checkIfDataIsNotEmpty(data.job, responseController, "le champ job est obligatoire!")
+            this.checkIfDataIsNotEmpty(data.body.firstname, responseController, "le champ firstname est obligatoire!")
+            this.checkIfDataIsNotEmpty(data.body.lastname, responseController, "le champ lastname est obligatoire!")
+            this.checkIfDataIsNotEmpty(data.body.email, responseController, "le champ email est obligatoire!")
+            this.checkIfDataIsNotEmpty(data.body.password, responseController, "le champ password est obligatoire!")
+            this.checkIfDataIsNotEmpty(data.body.description, responseController, "le champ description est obligatoire!")
+            this.checkIfDataIsNotEmpty(data.body.role, responseController, "le champ role est obligatoire!")
+            this.checkIfDataIsNotEmpty(data.body.job, responseController, "le champ job est obligatoire!")
 
         }
         return responseController
@@ -67,7 +68,10 @@ class User extends helpers{
                 role: null,
                 firstname: null,
                 lastname: null,
-                email: null
+                email: null,
+                description: null,
+                job: null,
+                photoProfile: null
             },
             token: null
         }
@@ -86,11 +90,15 @@ class User extends helpers{
                             responseController.successMessage = "vous etre co"
                             responseController.success = true
                             responseController.token = serviceJWT_user.generateTokenForUser(user)
-                            responseController.user.id = user.id
+                            //responseController.user.id = user.id
                             responseController.user.role = user.role
                             responseController.user.firstname = user.firstname
                             responseController.user.lastname = user.lastname
                             responseController.user.email = user.email
+                            responseController.user.description = user.description
+                            responseController.user.job = user.job
+                            responseController.user.photoProfile = user.photoProfile
+
                         }else if(user.isAccepted == 2){
                             responseController.status = 401
                             responseController.errors.push("vous avez etait refuser!")

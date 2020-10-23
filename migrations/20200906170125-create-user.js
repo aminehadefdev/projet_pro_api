@@ -35,6 +35,9 @@ module.exports = {
       job: {
         type: Sequelize.STRING
       },
+      photoProfile:{
+        type: Sequelize.TEXT
+      },
       createdAt: {
         allowNull: false,
         type: Sequelize.DATE

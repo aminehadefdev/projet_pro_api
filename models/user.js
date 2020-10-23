@@ -26,6 +26,7 @@ module.exports = (sequelize, DataTypes) => {
     isAccepted: DataTypes.INTEGER,
     idAdmin: DataTypes.INTEGER,
     job: DataTypes.STRING,
+    photoProfile: DataTypes.STRING
 
   }, {
     sequelize,
