@@ -148,7 +148,8 @@ class User extends helpers{
                     "firstname",
                     "lastname",
                     "description",
-                    "job"
+                    "job",
+                    "photoProfile",
                 ]
             })
         }

@@ -19,7 +19,7 @@ module.exports = {
         isAccepted: 0,
         idAdmin: 1,
         job: faker.name.jobTitle().substring(4),
-        photoProfile: "1ccbf7bfc169cc28e62b5e66448a521b",
+        photoProfile: "dc8dac44e93030fcb08eb64859d6b149",
       })
     }
   },
