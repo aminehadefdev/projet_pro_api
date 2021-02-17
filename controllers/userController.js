@@ -89,6 +89,7 @@ class User extends helpers{
             this.checkIfDataIsNotEmpty(data.body.description, responseController, "le champ description est obligatoire!")
             this.checkIfDataIsNotEmpty(data.body.role, responseController, "le champ role est obligatoire!")
             this.checkIfDataIsNotEmpty(data.body.job, responseController, "le champ job est obligatoire!")
+            this.checkIfDataIsNotEmpty(data.body.age, responseController, "le champ age est obligatoire!")
 
         }
         return responseController
@@ -134,7 +135,8 @@ class User extends helpers{
                 email: null,
                 description: null,
                 job: null,
-                photoProfile: null
+                photoProfile: null,
+                age: null
             },
             token: null
         }
@@ -161,6 +163,7 @@ class User extends helpers{
                             responseController.user.description = user.description
                             responseController.user.job = user.job
                             responseController.user.photoProfile = user.photoProfile
+                            responseController.user.age = user.age
 
                         }else if(user.emailIsConfirmed == 0){
                             responseController.status = 401
@@ -333,6 +336,9 @@ class User extends helpers{
         if(data.body.email)user.email = data.body.email
         if(data.body.description)user.description = data.body.description
         if(data.body.job)user.job = data.body.job
+        if(data.body.age)user.age = data.body.age
+
+        console.log(data.body, "iiiiiiiiiiiiiiiiiiiiiiiiiiciiiiiiiiiiiiiiiiiiiii")
 
         var up =  await userModel.update(user, {
             where: {id: data.decoded.id}
@@ -343,7 +349,7 @@ class User extends helpers{
             responseController.successMessage = "modification bien enregistrer!"
             responseController.success = true
         }else if(up[0] == 0){
-            responseController.errors.push("modification impossible!")
+            responseController.errors.push("modification impossible!!!!!!!!!!!!!!!!!!!!!")
             responseController.status = 403
             responseController.success = false
         }    
@@ -397,6 +403,12 @@ class User extends helpers{
             responseController.data = users
             responseController.success = true
             responseController.status = 201
+        }
+        return responseController
+    }
+    static async ping(){
+        var responseController = {
+            success: true
         }
         return responseController
     }

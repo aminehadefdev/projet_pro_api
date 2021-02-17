@@ -61,6 +61,7 @@ class serviceJWT_admin {
   }
   static AdminIsAutorisedLevelTwo(req, res, next) {
     var token = ''
+    console.log(req.body)
     if(req.body.token == null || req.body.token == undefined){
       if(req.query.token == null || req.query.token == undefined){
         if(req.headers.token == null || req.headers.token == undefined){
@@ -82,7 +83,6 @@ class serviceJWT_admin {
     if(token){
       jwt.verify(token, JWT_SIGN_SECRET, (err, decoded) => {
         if (err) {
-          console.log(err)
           return res.status(401).json({
             success: false,
             message: 'Token is not valid'

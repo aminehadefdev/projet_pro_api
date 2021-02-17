@@ -24,6 +24,7 @@ class serviceJWT_user {
   }
   static UserIsAutorised(req, res, next) {
     var token = ''
+    console.log(req.body)
     if(req.body.token == null || req.body.token == undefined){
       if(req.query.token == null || req.query.token == undefined){
         if(req.headers.token == null || req.headers.token == undefined){
@@ -39,17 +40,17 @@ class serviceJWT_user {
     }else{
       token = req.body.token
     }
-    if(token.startsWith('Bearer ')) {
-        token = token.slice(7, token.length);
+    if(token.startsWith('Bearer ')){
+      token = token.slice(7, token.length);
     }
     if(token){
       jwt.verify(token, JWT_SIGN_SECRET, (err, decoded) => {
-        if(err){
+        if (err) {
           return res.status(401).json({
             success: false,
             message: 'Token is not valid'
           });
-        }else {
+        }else{
           req.decoded = decoded;
           next();
         }

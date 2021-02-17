@@ -3,8 +3,9 @@ const videoContoller = require('../controllers/videoController')
 const avantageController = require('../controllers/avantageController')
 const regleController = require('../controllers/regleController')
 const userController = require('../controllers/userController')
+const serviceJWT_admin = require('../services/JWT_admin')
+const multer  = require('multer')
 
-var multer  = require('multer')
 var upload = multer({ dest: 'public/', fileFilter: (req, file,cb)=>{
     if(file.mimetype !== 'image/png' && file.mimetype !== 'image/jpeg'){
         return cb(null, false, console.log(file))
@@ -12,10 +13,8 @@ var upload = multer({ dest: 'public/', fileFilter: (req, file,cb)=>{
     cb(null, true)
 }})
 
-const serviceJWT_admin = require('../services/JWT_admin')
-
 module.exports = (app)=>{
-    app.post("/admin/register", serviceJWT_admin.AdminIsAutorisedLevelThree ,async (req, res)=>{
+    app.post("/admin/register", serviceJWT_admin.AdminIsAutorisedLevelThree , async (req, res)=>{
         var response = await adminController.register(req.body)
         res.status(response.status).json(response)
     })
