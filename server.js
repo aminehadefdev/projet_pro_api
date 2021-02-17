@@ -6,7 +6,7 @@ const port = env.PORT || 8080
 const cors = require('cors')
 const multer = require('multer')
 
-app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json())
 app.use('/static', express.static('public'));
 app.use(cors())

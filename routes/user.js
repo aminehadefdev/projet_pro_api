@@ -15,6 +15,10 @@ module.exports = (app)=>{
         var response = await userController.register(req)
         res.status(response.status).json(response)
     })
+    app.post("/verify/email", async (req, res)=>{
+        var response = await userController.confirmEmail(req)
+        res.status(response.status).json(response)
+    })
     app.post('/user/login', async (req, res)=>{
         var response = await userController.login(req.body)
         res.status(response.status).json(response)

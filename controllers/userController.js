@@ -1,10 +1,13 @@
 
 const helpers = require('../services/helpers')
+const uuid = require('node-uuid');
 const userModel = require('../models').user
 const adminModel = require('../models').Admin
 const requestMentoringModel = require('../models').requestMentoring
 const bcrypt = require('bcryptjs')
 const serviceJWT_user = require('../services/JWT_user')
+const nodemailer = require('nodemailer');
+const env = require("dotenv").config().parsed;
 
 const REGEX_EMAIL = /(?:[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*|"(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21\x23-\x5b\x5d-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])*")@(?:(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?|\[(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?|[a-z0-9-]*[a-z0-9]:(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21-\x5a\x53-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])+)\])/;
 const REGEX_NAME = /^([a-zA-Z]+)$/;
@@ -19,18 +22,50 @@ class User extends helpers{
             errors: [],
             status: null
         }
-        if(data.body.firstname && data.body.lastname && data.body.email && data.body.password && data.body.description && data.body.role && data.body.job){
+        if(data.body.age && data.body.firstname && data.body.lastname && data.body.email && data.body.password && data.body.description && data.body.role && data.body.job){
             if(REGEX_NAME.test(data.body.firstname) && REGEX_NAME.test(data.body.lastname) && REGEX_EMAIL.test(data.body.email) && REGEX_PASSWORD.test(data.body.password)){
                 let userExist = await userModel.findOne({ where: { email: data.body.email } });
                 if(!userExist){
+                    data.body.keyConfirmeEmail = uuid.v1()
+                    data.body.age = new Date(data.body.age)
                     data.body.password = await bcrypt.hash(data.body.password, 10)
                     data.body.isAccepted = 0
                     data.body.photoProfile = data.file.filename
+                    data.body.emailIsConfirmed = 0
                     var newUser = await userModel.create(data.body)
                     if(newUser){
                         responseController.successMessage = "enregistrement reussi :)"
                         responseController.success = true
                         responseController.status = 201
+                        
+                        var auhtEmail = {
+                            host: 'smtp.gmail.com',
+                            port: 465,
+                            secure: true,
+                            auth: {
+                                user: env.EMAIL,
+                                pass: env.PASSWORD,
+                            }
+                        }
+
+                        var transporter = nodemailer.createTransport(auhtEmail);
+                        var mailOptions = {
+                            from: env.EMAIL,
+                            to: data.body.email,
+                            subject: "Verification de l'e-mail torus",
+                            html: `
+                                <a href="${env.URL}/verify/email/${data.body.keyConfirmeEmail}">confirmer l'email</a>
+                            `
+                        };
+
+                        transporter.sendMail(mailOptions, (error, info)=>{
+                            if (error) {
+                                console.log(error);
+                            } else {
+                                console.log('Email sent: ' + info.response);
+                            }
+                        });
+
                     }else{
                         responseController.success = false
                         responseController.errors.push('un probles est survenu!')
@@ -56,6 +91,34 @@ class User extends helpers{
             this.checkIfDataIsNotEmpty(data.body.job, responseController, "le champ job est obligatoire!")
 
         }
+        return responseController
+    }
+    static swap(json){
+        var ret = {};
+        var i = 0
+        for(var key in json){
+          ret[json[key]] = key;
+        }
+        return ret;
+    }
+    static async confirmEmail(data){
+        var responseController = {
+            success: null,
+            successMessage: null,
+            errors: [],
+            status: 201
+        }
+        data.body = User.swap(data.body)
+        var slug = JSON.parse(data.body['']).slug
+        let userSlugExist = await userModel.findOne({ where: { keyConfirmeEmail: slug } });
+        if(userSlugExist != null){
+            userSlugExist.emailIsConfirmed = 1
+            console.log(userSlugExist.dataValues)
+            var up =  await userModel.update(userSlugExist.dataValues, {
+                where: {id: userSlugExist.id}
+            })
+        }
+
         return responseController
     }
     static async login(data) {
@@ -99,7 +162,12 @@ class User extends helpers{
                             responseController.user.job = user.job
                             responseController.user.photoProfile = user.photoProfile
 
-                        }else if(user.isAccepted == 2){
+                        }else if(user.emailIsConfirmed == 0){
+                            responseController.status = 401
+                            responseController.errors.push("veuillez confirmet votre email svp!")
+                            responseController.success = false
+                        }
+                        else if(user.isAccepted == 2){
                             responseController.status = 401
                             responseController.errors.push("vous avez etait refuser!")
                             responseController.success = false
@@ -316,6 +384,9 @@ class User extends helpers{
         }
 
         var users = await userModel.findAll({
+            where: {
+                emailIsConfirmed: 1
+            },
             include:{
                 model: adminModel,
                 attributes:["id","firstname", "lastname", "email"]
