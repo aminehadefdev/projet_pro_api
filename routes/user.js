@@ -14,10 +14,6 @@ module.exports = (app)=>{
         var response = await userController.register(req)
         res.status(response.status).json(response)
     })
-    app.post('/user/ping', serviceJWT_user.UserIsAutorised, async (req, res)=>{
-        var response = await userController.ping()
-        res.json(response)
-    })
     app.post('/user/crud', serviceJWT_user.UserIsAutorised, async (req, res)=>{
         var response = await userController.crud(req)
         res.status(response.status).json(response)
@@ -48,5 +44,9 @@ module.exports = (app)=>{
     app.post("/user/request/mentoring", serviceJWT_user.UserIsAutorised, async (req, res)=>{
         var response = await userController.requisteMentoring(req)
         res.status(response.status).json(response)
+    })
+    app.post('/user/ping', serviceJWT_user.UserIsAutorised, async (req, res)=>{
+        var response = await userController.ping()
+        res.json(response)
     })
 }
